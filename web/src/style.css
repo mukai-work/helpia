@@ -158,3 +158,15 @@ table.cmp { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 
 .c-ok .badge { background: var(--good-bg); color: var(--good); }
 .c-warn .badge { background: var(--warn-bg); color: var(--warn); }
 .c-missing .badge { background: var(--bad-bg); color: var(--bad); }
+
+/* AIと人の比較棒 */
+.bars { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 28px; margin-bottom: 20px; }
+.bar-title { font-size: 13px; font-weight: 600; margin: 0 0 6px; }
+.bar-row { display: grid; grid-template-columns: 2em 1fr 4.5em; gap: 8px; align-items: center; margin-bottom: 4px; }
+.bar-who { font-size: 12px; color: var(--muted); }
+.bar-track { height: 14px; background: var(--bg-soft); border-radius: 3px; overflow: hidden; }
+.bar { display: block; height: 100%; border-radius: 3px; }
+.bar-ai { background: var(--accent); }
+.bar-human { background: #8a96a6; }
+.bar-val { font-size: 13px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; color: var(--navy); }
+.cmp thead th { white-space: nowrap; }

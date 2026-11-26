@@ -43,6 +43,8 @@ const metrics = computed(() => {
       note: 'コードを変えたコミットのうち、テストのファイルも変えたもの。高いほどよい',
       ai: pct(h.ai.testTouchRate),
       human: pct(h.human.testTouchRate),
+      aiBar: h.ai.testTouchRate,
+      humanBar: h.human.testTouchRate,
     },
     {
       key: 'rework',
@@ -50,6 +52,8 @@ const metrics = computed(() => {
       note: `変えたコードのファイルを、${h.reworkWindowDays}日以内に別のコミットがまた変えた割合。低いほど一度で決まっている。期間の終わり${h.reworkWindowDays}日は判定しない`,
       ai: pct(h.ai.reworkRate),
       human: pct(h.human.reworkRate),
+      aiBar: h.ai.reworkRate,
+      humanBar: h.human.reworkRate,
     },
     {
       key: 'size',
@@ -57,9 +61,17 @@ const metrics = computed(() => {
       note: `大きいほどレビューが重い。${h.largeCommitLines}行以上のコミット: AI ${h.ai.largeCommits}件・人 ${h.human.largeCommits}件`,
       ai: num(h.ai.medianLinesChanged),
       human: num(h.human.medianLinesChanged),
+      ...scaled(h.ai.medianLinesChanged, h.human.medianLinesChanged),
     },
   ]
 })
+
+/** 行数の棒は、2つのうち大きい方を1として長さをそろえる */
+function scaled(a: number | null, b: number | null) {
+  const max = Math.max(a ?? 0, b ?? 0)
+  return { aiBar: a === null || max === 0 ? null : a / max, humanBar: b === null || max === 0 ? null : b / max }
+}
+const barWidth = (v: number | null) => (v === null ? '0%' : `${Math.max(v * 100, v > 0 ? 2 : 0)}%`)
 
 const statusLabel = { Ok: 'できている', Warn: '確認したい', Missing: '無い' } as const
 const readyCount = computed(() => r.value?.readiness.filter((c) => c.status === 'Ok').length ?? 0)
@@ -130,13 +142,28 @@ const readyCount = computed(() => r.value?.readiness.filter((c) => c.status === 
 
       <section class="block">
         <h2>AIのコミットと人のコミットを比べる</h2>
+        <div class="bars">
+          <div v-for="m in metrics" :key="m.key" class="bar-group">
+            <p class="bar-title">{{ m.title }}</p>
+            <div class="bar-row">
+              <span class="bar-who">AI</span>
+              <span class="bar-track"><span class="bar bar-ai" :style="{ width: barWidth(m.aiBar) }"></span></span>
+              <span class="bar-val">{{ m.ai }}</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-who">人</span>
+              <span class="bar-track"><span class="bar bar-human" :style="{ width: barWidth(m.humanBar) }"></span></span>
+              <span class="bar-val">{{ m.human }}</span>
+            </div>
+          </div>
+        </div>
         <div class="table-scroll">
           <table class="cmp">
             <thead>
               <tr>
                 <th scope="col">指標</th>
-                <th scope="col">AIが関わったコミット{{ smallNote(r.history.ai) }}</th>
-                <th scope="col">人だけのコミット{{ smallNote(r.history.human) }}</th>
+                <th scope="col">AIのコミット{{ smallNote(r.history.ai) }}</th>
+                <th scope="col">人のコミット{{ smallNote(r.history.human) }}</th>
               </tr>
             </thead>
             <tbody>
