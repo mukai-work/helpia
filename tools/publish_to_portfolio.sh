@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ヘルピアの画面を mukai.works（../portfolio）の public/helpia/ に組み込む。公開は portfolio 側で vercel deploy。
 set -euo pipefail
-cd "$(dirname "$0")/web"
+cd "$(dirname "$0")/../web"
 PORTFOLIO="${PORTFOLIO_DIR:-../../portfolio}"
 MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' HELPIA_BASE=/helpia/ npm run build
 grep -q 'src="/helpia/assets/' dist/index.html || { echo "部品のパスが /helpia/ になっていません" >&2; exit 1; }
