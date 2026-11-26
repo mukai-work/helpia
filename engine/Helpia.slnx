@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Helpia.Cli/Helpia.Cli.csproj" />
+  <Project Path="Helpia.Core/Helpia.Core.csproj" />
+  <Project Path="Helpia.Tests/Helpia.Tests.csproj" />
+</Solution>
